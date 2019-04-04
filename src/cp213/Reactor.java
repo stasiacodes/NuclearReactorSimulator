@@ -119,6 +119,8 @@ public class Reactor {
 		
 		this.rodsHeight = ROD_LENGTH;
 		this.status = Status.SHUTDOWN;
+		this.pcs.firePropertyChange("change", null, null);
+
 	}
 
 	/**
@@ -212,7 +214,10 @@ public class Reactor {
 			this.rodsHeight += 1;
 			this.temperature -= 1;
 			this.rodsChanged = true;
+			this.pcs.firePropertyChange("change", null, null);
+
 		}
+		
 	}
 
 	/**
@@ -224,6 +229,8 @@ public class Reactor {
 			this.rodsHeight -= 1;
 			this.temperature += 1;
 			this.rodsChanged = true;
+			this.pcs.firePropertyChange("change", null, null);
+
 		}
 	}
 
@@ -232,6 +239,7 @@ public class Reactor {
 	 */
 	public void quit() {
 		this.status = Status.FINISHED;
+		this.pcs.firePropertyChange("change", null, null);
 		return;
 	}
 
@@ -259,6 +267,8 @@ public class Reactor {
 			this.status = Status.OPERATING;
 		}
 		this.rodsChanged = false;
+
+		this.pcs.firePropertyChange("change", null, null);
 
 	}
 }

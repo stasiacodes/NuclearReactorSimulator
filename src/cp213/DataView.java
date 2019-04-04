@@ -1,189 +1,196 @@
 package cp213;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 
-import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 //---------------------------------------------------------------
 /**
- * View and update the right triangle model with numeric fields.
+ * Display all the key info about the reactor and allow the user to start and
+ * stop the simulation.
  *
- * @author David Brown from Byron Weber-Becker
- * @version 2017-06-19
+ * @author Anastasia Martynovitch
+ * @version 2019-04-03
  */
 @SuppressWarnings("serial")
 public class DataView extends JPanel {
 
-    // ---------------------------------------------------------------
+	// ---------------------------------------------------------------
     /**
-     * An inner class that uses a FocusListener to access the numeric field. It
-     * sets the model values when the field loses focus.
+     * An inner class that uses an ActionListener to access the buttons. It sets
+     * the model values when the button is pressed.
      */
-    private class BaseFieldListener implements FocusListener {
-	// Automatically highlight the entire contents of the numeric field.
-	@Override
-	public void focusGained(final FocusEvent evt) {
-	    DataView.this.base.selectAll();
-	}
+    private class StartListener implements ActionListener {
 
 	@Override
-	public void focusLost(final FocusEvent evt) {
-	    double value = 0;
-
-	    try {
-		value = Double.parseDouble(DataView.this.base.getText());
-	    } catch (final java.lang.NumberFormatException e) {
-		value = Reactor.MAX_SIDE / 2;
-	    } finally {
-		DataView.this.model.setBase(value);
-	    }
+	public void actionPerformed(final ActionEvent evt) {
+		DataView.this.quit.setEnabled(true);
+		DataView.this.start.setEnabled(false);
+		while (DataView.this.model.getStatus() == Reactor.Status.OPERATING) {
+			DataView.this.model.tick();
+//			try {
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+		}
+		
 	}
     }
-
-    // -------------------------------------------------------------------------------
+	// ---------------------------------------------------------------
     /**
-     * An inner class the updates the base and hypotenuse labels whenever the
-     * model's base attribute is updated.
+     * An inner class that uses an ActionListener to access the buttons. It sets
+     * the model values when the button is pressed.
      */
-    private class BaseListener implements PropertyChangeListener {
-
+    private class QuitListener implements ActionListener {
+	
 	@Override
-	public void propertyChange(final PropertyChangeEvent evt) {
-	    DataView.this.base.setText(
-		    decimalFormat.format(DataView.this.model.getBase()));
-	    DataView.this.hypo.setText(DataView.decimalFormat
-		    .format(DataView.this.model.getHypotenuse()));
+	public void actionPerformed(final ActionEvent evt) {
+	    DataView.this.model.quit();
+	    DataView.this.quit.setEnabled(false);
 	}
     }
+	// -------------------------------------------------------------------------------
+	/**
+	 * An inner class the updates the base and hypotenuse labels whenever the
+	 * model's base attribute is updated.
+	 */
+	private class ChangeListener implements PropertyChangeListener {
 
-    // -------------------------------------------------------------------------------
-    /**
-     * An inner class that uses a FocusListener to access the numeric field. It
-     * sets the model values when the field loses focus.
-     */
-    private class HeightFieldListener implements FocusListener {
-	// Automatically highlight the entire contents of the numeric field.
-	@Override
-	public void focusGained(final FocusEvent evt) {
-	    DataView.this.height.selectAll();
+		@Override
+		public void propertyChange(final PropertyChangeEvent evt) {
+			DataView.this.status.setText(DataView.this.model.getStatus().toString());
+			DataView.this.ticks.setText(Integer.toString(DataView.this.model.getTicks()));
+			DataView.this.rodsHeight.setText(Integer.toString(DataView.this.model.getRodsHeight()));
+			DataView.this.temp.setText(DataView.decimalFormat.format(DataView.this.model.getTemperature()));
+			DataView.this.power.setText(DataView.decimalFormat.format(DataView.this.model.getPower()));
+			DataView.this.avgTemp.setText(DataView.decimalFormat.format(DataView.this.model.getAverageTemperature()));
+			DataView.this.avgPower.setText(DataView.decimalFormat.format(DataView.this.model.getAveragePower()));			
+			
+		}
 	}
 
-	@Override
-	public void focusLost(final FocusEvent evt) {
-	    double value = 0;
+	// -------------------------------------------------------------------------------
 
-	    try {
-		value = Double.parseDouble(DataView.this.height.getText());
-	    } catch (final java.lang.NumberFormatException e) {
-		value = Reactor.MAX_SIDE / 2;
-	    } finally {
-		DataView.this.model.setHeight(value);
-	    }
+	/**
+     * Start Simulation
+     */
+    private final JButton start = new JButton("Start");
+    /**
+     * Quit Simulation
+     */
+    private final JButton quit = new JButton("Quit");
+	/**
+	 * The format string for reading / displaying numeric input / output.
+	 */
+	private static final String formatString = "###.##";
+	/**
+	 * The formatters for reading / displaying numeric input / output.
+	 */
+	private static final DecimalFormat decimalFormat = new DecimalFormat(formatString);
+	/**
+	 * The status value field
+	 */
+	private final JLabel status = new JLabel(" ");
+	/**
+	 * The ticks value field
+	 */
+	private final JLabel ticks = new JLabel(" ");
+	/**
+	 * The Rods Height value field
+	 */
+	private final JLabel rodsHeight = new JLabel(" ");
+	/**
+	 * The ticks value field
+	 */
+	private final JLabel temp = new JLabel(" ");
+	/**
+	 * The ticks value field
+	 */
+	private final JLabel power = new JLabel(" ");
+	/**
+	 * The ticks value field
+	 */
+	private final JLabel avgTemp = new JLabel(" ");
+	/**
+	 * The ticks value field
+	 */
+	private final JLabel avgPower = new JLabel(" ");
+	/**
+	 * The reactor model.
+	 */
+	private final Reactor model;
+
+	// ---------------------------------------------------------------
+	/**
+	 * The view constructor.
+	 *
+	 * @param model The Reactor model to view
+	 */
+	public DataView(final Reactor model) {
+		this.model = model;
+		this.layoutView();
+		this.registerListeners();
+		// Initialize the view labels.
+		this.status.setText(this.model.getStatus().toString());
+		this.ticks.setText(DataView.decimalFormat.format(this.model.getTicks()));
+		this.rodsHeight.setText(DataView.decimalFormat.format(this.model.getRodsHeight()));
+		this.temp.setText(DataView.decimalFormat.format(this.model.getTemperature()));
+		this.power.setText(DataView.decimalFormat.format(this.model.getPower()));
+		this.avgTemp.setText(DataView.decimalFormat.format(this.model.getAverageTemperature()));
+		this.avgPower.setText(DataView.decimalFormat.format(this.model.getAveragePower()));
 	}
-    }
 
-    // -------------------------------------------------------------------------------
-    /**
-     * An inner class the updates the height and hypotenuse labels whenever the
-     * model's height attribute is updated.
-     */
-    private class HeightListener implements PropertyChangeListener {
-
-	@Override
-	public void propertyChange(final PropertyChangeEvent evt) {
-	    DataView.this.height.setText(
-		    decimalFormat.format(DataView.this.model.getHeight()));
-	    DataView.this.hypo.setText(DataView.decimalFormat
-		    .format(DataView.this.model.getHypotenuse()));
+	// ---------------------------------------------------------------
+	/**
+	 * Uses the GridLayout to place the labels and buttons
+	 */
+	private void layoutView() {
+		// Define the widgets.
+		this.status.setHorizontalAlignment(SwingConstants.RIGHT);
+		this.ticks.setHorizontalAlignment(SwingConstants.RIGHT);
+		this.rodsHeight.setHorizontalAlignment(SwingConstants.RIGHT);
+		this.temp.setHorizontalAlignment(SwingConstants.RIGHT);
+		this.power.setHorizontalAlignment(SwingConstants.RIGHT);
+		this.avgTemp.setHorizontalAlignment(SwingConstants.RIGHT);
+		this.avgPower.setHorizontalAlignment(SwingConstants.RIGHT);
+		// Lay out the panel.
+		this.setLayout(new GridLayout(8,2));
+		this.add(this.start);
+		this.add(this.quit);
+		this.add(new JLabel("Status: "));
+		this.add(this.status);
+		this.add(new JLabel("Ticks: "));
+		this.add(this.ticks);
+		this.add(new JLabel("Rods Height: "));
+		this.add(this.rodsHeight);
+		this.add(new JLabel("Core Temperature: "));
+		this.add(this.temp);
+		this.add(new JLabel("Power Generation: "));
+		this.add(this.power);
+		this.add(new JLabel("Average Temperature: "));
+		this.add(this.avgTemp);
+		this.add(new JLabel("Average Power: "));
+		this.add(this.avgPower);
 	}
-    }
-
-    // -------------------------------------------------------------------------------
-
+	// ---------------------------------------------------------------
     /**
-     * The format string for reading / displaying numeric input / output.
-     */
-    private static final String formatString = "###.##";
-    /**
-     * The formatters for reading / displaying numeric input / output.
-     */
-    private static final DecimalFormat decimalFormat = new DecimalFormat(
-	    formatString);
-    /**
-     * The base value field.
-     */
-    private final JTextField base = new JTextField(formatString.length());
-    /**
-     * The height value field.
-     */
-    private final JTextField height = new JTextField(formatString.length());
-    /**
-     * The hypotenuse value field - cannot be edited by the user.
-     */
-    private final JLabel hypo = new JLabel(" ");
-    /**
-     * The right triangle model.
-     */
-    private final Reactor model;
-
-    // ---------------------------------------------------------------
-    /**
-     * The view constructor.
-     *
-     * @param model
-     *            The right triangle model to view.
-     */
-    public DataView(final Reactor model) {
-	this.model = model;
-	this.layoutView();
-	this.registerListeners();
-	// Initialize the view labels.
-	this.base.setText(decimalFormat.format(this.model.getBase()));
-	this.height.setText(decimalFormat.format(this.model.getHeight()));
-	this.hypo.setText(
-		DataView.decimalFormat.format(this.model.getHypotenuse()));
-    }
-
-    // ---------------------------------------------------------------
-    /**
-     * Uses the BoxLayout to place the labels and numeric fields.
-     */
-    private void layoutView() {
-	// Define the widgets.
-	this.base.setHorizontalAlignment(SwingConstants.RIGHT);
-	this.height.setHorizontalAlignment(SwingConstants.RIGHT);
-	this.hypo.setHorizontalAlignment(SwingConstants.RIGHT);
-	// Lay out the panel.
-	this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-	this.add(new JLabel("Base: "));
-	this.add(this.base);
-	this.add(new JLabel("Height: "));
-	this.add(this.height);
-	this.add(new JLabel("Hypotenuse: "));
-	this.add(this.hypo);
-    }
-
-    // ---------------------------------------------------------------
-    /**
-     * Assigns listeners to the field widgets and the model.
+     * Assigns listeners to the view widgets.
      */
     private void registerListeners() {
 	// Add widget listeners.
-	this.base.addFocusListener(new BaseFieldListener());
-	this.height.addFocusListener(new HeightFieldListener());
-	// Add model listeners.
-	this.model.addPropertyChangeListener(Reactor.BASE_CHANGE,
-		new BaseListener());
-	this.model.addPropertyChangeListener(Reactor.HEIGHT_CHANGE,
-		new HeightListener());
+	this.start.addActionListener(new StartListener());
+	this.quit.addActionListener(new QuitListener());	
+	this.model.addPropertyChangeListener("change", new ChangeListener());
     }
 
     // ---------------------------------------------------------------
