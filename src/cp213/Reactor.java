@@ -8,9 +8,9 @@ import java.util.Random;
  * A simple nuclear reactor simulation. Given a starting temperature and control
  * rods heights, attempt to control the reactor over a period of time.
  *
- * @author -- your name here --
+ * @author Anastasia Martynovitch
  * @author David Brown
- * @version 2019-03-22
+ * @version 2019-04-03
  *
  */
 public class Reactor {

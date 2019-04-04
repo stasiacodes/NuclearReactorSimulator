@@ -21,44 +21,66 @@ import javax.swing.SwingConstants;
  * @version 2019-04-03
  */
 @SuppressWarnings("serial")
-public class DataView extends JPanel {
+public class DataView extends JPanel implements Runnable {
 
-	// ---------------------------------------------------------------
-    /**
-     * An inner class that uses an ActionListener to access the buttons. It sets
-     * the model values when the button is pressed.
-     */
-    private class StartListener implements ActionListener {
-
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see java.lang.Runnable#run()
+	 *
+	 * Run the reactor control.
+	 */
 	@Override
-	public void actionPerformed(final ActionEvent evt) {
-		DataView.this.quit.setEnabled(true);
-		DataView.this.start.setEnabled(false);
+	public void run() {
 		while (DataView.this.model.getStatus() == Reactor.Status.OPERATING) {
 			DataView.this.model.tick();
-//			try {
-//				Thread.sleep(100);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
 	}
-    }
+
 	// ---------------------------------------------------------------
-    /**
-     * An inner class that uses an ActionListener to access the buttons. It sets
-     * the model values when the button is pressed.
-     */
-    private class QuitListener implements ActionListener {
-	
-	@Override
-	public void actionPerformed(final ActionEvent evt) {
-	    DataView.this.model.quit();
-	    DataView.this.quit.setEnabled(false);
+	/**
+	 * An inner class that uses an ActionListener to access the buttons. It sets the
+	 * model values when the button is pressed.
+	 */
+	private class StartListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(final ActionEvent evt) {
+			DataView.this.quit.setEnabled(true);
+			DataView.this.start.setEnabled(false);
+
+			Runnable r = new Runnable() {
+				public void run() {
+					DataView.this.run();
+				}
+			};
+
+			Thread t = new Thread(r);
+			t.start();
+
+		}
 	}
-    }
+
+	// ---------------------------------------------------------------
+	/**
+	 * An inner class that uses an ActionListener to access the buttons. It sets the
+	 * model values when the button is pressed.
+	 */
+	private class QuitListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(final ActionEvent evt) {
+			DataView.this.model.quit();
+			DataView.this.quit.setEnabled(false);
+		}
+	}
+
 	// -------------------------------------------------------------------------------
 	/**
 	 * An inner class the updates the base and hypotenuse labels whenever the
@@ -74,21 +96,21 @@ public class DataView extends JPanel {
 			DataView.this.temp.setText(DataView.decimalFormat.format(DataView.this.model.getTemperature()));
 			DataView.this.power.setText(DataView.decimalFormat.format(DataView.this.model.getPower()));
 			DataView.this.avgTemp.setText(DataView.decimalFormat.format(DataView.this.model.getAverageTemperature()));
-			DataView.this.avgPower.setText(DataView.decimalFormat.format(DataView.this.model.getAveragePower()));			
-			
+			DataView.this.avgPower.setText(DataView.decimalFormat.format(DataView.this.model.getAveragePower()));
+
 		}
 	}
 
 	// -------------------------------------------------------------------------------
 
 	/**
-     * Start Simulation
-     */
-    private final JButton start = new JButton("Start");
-    /**
-     * Quit Simulation
-     */
-    private final JButton quit = new JButton("Quit");
+	 * Start Simulation
+	 */
+	private final JButton start = new JButton("Start");
+	/**
+	 * Quit Simulation
+	 */
+	private final JButton quit = new JButton("Quit");
 	/**
 	 * The format string for reading / displaying numeric input / output.
 	 */
@@ -164,7 +186,7 @@ public class DataView extends JPanel {
 		this.avgTemp.setHorizontalAlignment(SwingConstants.RIGHT);
 		this.avgPower.setHorizontalAlignment(SwingConstants.RIGHT);
 		// Lay out the panel.
-		this.setLayout(new GridLayout(8,2));
+		this.setLayout(new GridLayout(8, 2));
 		this.add(this.start);
 		this.add(this.quit);
 		this.add(new JLabel("Status: "));
@@ -182,16 +204,17 @@ public class DataView extends JPanel {
 		this.add(new JLabel("Average Power: "));
 		this.add(this.avgPower);
 	}
-	// ---------------------------------------------------------------
-    /**
-     * Assigns listeners to the view widgets.
-     */
-    private void registerListeners() {
-	// Add widget listeners.
-	this.start.addActionListener(new StartListener());
-	this.quit.addActionListener(new QuitListener());	
-	this.model.addPropertyChangeListener("change", new ChangeListener());
-    }
 
-    // ---------------------------------------------------------------
+	// ---------------------------------------------------------------
+	/**
+	 * Assigns listeners to the view widgets.
+	 */
+	private void registerListeners() {
+		// Add widget listeners.
+		this.start.addActionListener(new StartListener());
+		this.quit.addActionListener(new QuitListener());
+		this.model.addPropertyChangeListener("change", new ChangeListener());
+	}
+
+	// ---------------------------------------------------------------
 }

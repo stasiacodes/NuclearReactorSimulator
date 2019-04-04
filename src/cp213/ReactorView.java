@@ -6,8 +6,7 @@ import javax.swing.JPanel;
 
 //---------------------------------------------------------------
 /**
- * Puts three right triangle views into the same JPanel using various layouts.
- * Each view is updated individually rather than through top view.
+ * Puts 2 controller views into the same panel. Each view is updated individually.
  *
  * @author Anastasia Martynovitch
  * @version 2019-04-03

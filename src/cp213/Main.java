@@ -1,10 +1,7 @@
 package cp213;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
-import cp213.Reactor.Status;
-import java.util.Scanner;
 
 /**
  * @author Anastasia Martynovitch
@@ -19,8 +16,8 @@ public class Main {
 
 		// Run one or the other:
 
-		main.RunReactor(400, 50);
-//		main.RunReactorController(400, 50);
+//		main.RunReactor(400, 50);
+		main.RunReactorController(400, 50);
 	}
 
 	/**
@@ -50,8 +47,16 @@ public class Main {
 	 */
 	public void RunReactorController(final int initialTemperature, final int initialRodsHeight) {
 		Reactor reactor = new Reactor(initialTemperature, initialRodsHeight);
-		ReactorController rc = new ReactorController(reactor);
-		rc.run();
+		final RCDataView view = new RCDataView(reactor);
+		
+		final JFrame f = new JFrame("Nuclear Reactor");
+		f.setContentPane(view);
+		f.setSize(300, 250);
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setVisible(true);
+	    }
+		
+//		final ReactorController rc = new ReactorController(reactor);
+//		rc.run();
 	}
 
-}
