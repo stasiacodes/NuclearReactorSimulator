@@ -74,7 +74,7 @@ public class Reactor {
 	private int rodsHeight = 0;
 	private Status status = Status.OPERATING;
 	private double temperature = 0;
-	private int ticks = 0;
+	private int ticks = 1;
 	private long totalPower = 0;
 	private long totalTemperature = 0;
 
@@ -129,12 +129,7 @@ public class Reactor {
 	 */
 	public double getAveragePower() {
 
-		double power = 0.00;
-		if (this.ticks == 0) {
-			power = this.power;
-		} else {
-			power = this.totalPower / this.ticks;
-		}
+		double power = this.totalPower / this.ticks;
 		return power;
 
 	}
@@ -147,12 +142,7 @@ public class Reactor {
 	 */
 	public double getAverageTemperature() {
 
-		double temp = 0.00;
-		if (this.ticks == 0) {
-			temp = this.temperature;
-		} else {
-			temp = this.totalTemperature / this.ticks;
-		}
+		double temp = this.totalTemperature / this.ticks;
 		return temp;
 
 	}
