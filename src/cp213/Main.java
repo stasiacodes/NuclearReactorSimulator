@@ -1,5 +1,8 @@
 package cp213;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.swing.JFrame;
 
 
@@ -30,12 +33,18 @@ public class Main {
 	public void RunReactor(final double initialTemperature, final int initialRodsHeight) {
 		Reactor reactor = new Reactor(initialTemperature, initialRodsHeight);
 		final ReactorView view = new ReactorView(reactor);
+		final ExecutorService controller = Executors.newCachedThreadPool();
+		
 
 		final JFrame f = new JFrame("Nuclear Reactor");
 		f.setContentPane(view);
 		f.setSize(300, 350);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
+		
+		controller.execute(view);
+		
+		
 	    }
 
 	/**
@@ -47,16 +56,17 @@ public class Main {
 	 */
 	public void RunReactorController(final int initialTemperature, final int initialRodsHeight) {
 		Reactor reactor = new Reactor(initialTemperature, initialRodsHeight);
-		final RCDataView view = new RCDataView(reactor);
+		final DataView view = new DataView(reactor);
+		final ExecutorService controller = Executors.newCachedThreadPool();
+		final ReactorController rc = new ReactorController(reactor);
 		
 		final JFrame f = new JFrame("Nuclear Reactor");
 		f.setContentPane(view);
 		f.setSize(300, 250);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
-	    }
 		
-//		final ReactorController rc = new ReactorController(reactor);
-//		rc.run();
+		controller.execute(rc);
+	    }
 	}
 

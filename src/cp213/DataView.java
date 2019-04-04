@@ -14,58 +14,13 @@ import javax.swing.SwingConstants;
 
 //---------------------------------------------------------------
 /**
- * Display all the key info about the reactor and allow the user to start and
- * stop the simulation.
+ * Display all the key info about the reactor and allow the user to stop the simulation.
  *
  * @author Anastasia Martynovitch
  * @version 2019-04-03
  */
 @SuppressWarnings("serial")
-public class DataView extends JPanel implements Runnable {
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see java.lang.Runnable#run()
-	 *
-	 * Run the reactor control.
-	 */
-	@Override
-	public void run() {
-		while (DataView.this.model.getStatus() == Reactor.Status.OPERATING) {
-			DataView.this.model.tick();
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-
-	// ---------------------------------------------------------------
-	/**
-	 * An inner class that uses an ActionListener to access the buttons. It sets the
-	 * model values when the button is pressed.
-	 */
-	private class StartListener implements ActionListener {
-
-		@Override
-		public void actionPerformed(final ActionEvent evt) {
-			DataView.this.quit.setEnabled(true);
-			DataView.this.start.setEnabled(false);
-
-			Runnable r = new Runnable() {
-				public void run() {
-					DataView.this.run();
-				}
-			};
-
-			Thread t = new Thread(r);
-			t.start();
-
-		}
-	}
+public class DataView extends JPanel {
 
 	// ---------------------------------------------------------------
 	/**
@@ -104,13 +59,9 @@ public class DataView extends JPanel implements Runnable {
 	// -------------------------------------------------------------------------------
 
 	/**
-	 * Start Simulation
-	 */
-	private final JButton start = new JButton("Start");
-	/**
 	 * Quit Simulation
 	 */
-	private final JButton quit = new JButton("Quit");
+	private final JButton quit = new JButton("Stop Simulation");
 	/**
 	 * The format string for reading / displaying numeric input / output.
 	 */
@@ -187,13 +138,13 @@ public class DataView extends JPanel implements Runnable {
 		this.avgPower.setHorizontalAlignment(SwingConstants.RIGHT);
 		// Lay out the panel.
 		this.setLayout(new GridLayout(8, 2));
-		this.add(this.start);
+		this.add(new JLabel(""));
 		this.add(this.quit);
 		this.add(new JLabel("Status: "));
 		this.add(this.status);
 		this.add(new JLabel("Ticks: "));
 		this.add(this.ticks);
-		this.add(new JLabel("Rods Height: "));
+		this.add(new JLabel("Rod Insertion: "));
 		this.add(this.rodsHeight);
 		this.add(new JLabel("Core Temperature: "));
 		this.add(this.temp);
@@ -211,7 +162,6 @@ public class DataView extends JPanel implements Runnable {
 	 */
 	private void registerListeners() {
 		// Add widget listeners.
-		this.start.addActionListener(new StartListener());
 		this.quit.addActionListener(new QuitListener());
 		this.model.addPropertyChangeListener("change", new ChangeListener());
 	}

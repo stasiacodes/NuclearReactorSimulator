@@ -53,6 +53,11 @@ public class ReactorController implements Runnable {
 			} else if ((temp > MAXTEMP && increasing) || increasingGr1) {
 				this.model.lowerRods();
 			}
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

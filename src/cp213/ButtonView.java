@@ -26,7 +26,7 @@ public class ButtonView extends JPanel {
 	
 	@Override
 	public void actionPerformed(final ActionEvent evt) {
-	    ButtonView.this.model.raiseRods();
+	    ButtonView.this.model.lowerRods();
 	}
     }
 

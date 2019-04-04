@@ -6,7 +6,7 @@ Currently, it appears that the reactor will not melt down. I ran it a few times 
 
 2. How fast can the reactor be brought up to an operating temperature of 600C without having it subsequently meltdown?
 
-On average, it takes somewhere between 184-195 ticks for the reactor to reach 600 Degrees, if it starts at 25 degrees and 0 cm rod insertion.
+On average, it takes somewhere between 164-195 ticks for the reactor to reach 600 Degrees, if it starts at 25 degrees and 0 cm rod insertion.
 
 3. Starting with control rods inserted 50 cm, what's the highest temperature you can start at without the reactor melting down?
 

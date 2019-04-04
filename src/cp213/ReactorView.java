@@ -12,10 +12,30 @@ import javax.swing.JPanel;
  * @version 2019-04-03
  */
 @SuppressWarnings("serial")
-public class ReactorView extends JPanel {
+public class ReactorView extends JPanel implements Runnable {
 	// The model views.
 	private ButtonView bView = null;
 	private DataView dView = null;
+	private Reactor model = null;
+	
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see java.lang.Runnable#run()
+	 *
+	 * Run the reactor control.
+	 */
+	@Override
+	public void run() {
+		while (this.model.getStatus() == Reactor.Status.OPERATING) {
+			this.model.tick();
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	// ---------------------------------------------------------------
 	/**
@@ -26,6 +46,7 @@ public class ReactorView extends JPanel {
 	public ReactorView(final Reactor model) {
 		this.dView = new DataView(model);
 		this.bView = new ButtonView(model);
+		this.model = model;
 		this.layoutView();
 	}
 
